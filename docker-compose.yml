@@ -7,7 +7,7 @@ services:
     environment:
       - DB_HOST=postgres
       - DB_USER=rctv
-      - DB_PASSWORD=rctv@01
+      - DB_PASSWORD="rctv@01"
       - DB_NAME=media_db
       - DB_PORT=5432
       - PORT=4000
@@ -24,14 +24,14 @@ services:
     image: postgres:15
     container_name: postgres
     environment:
-      POSTGRES_USER: rctv
-      POSTGRES_PASSWORD: rctv@01
-      POSTGRES_DB: media_db
+      POSTGRES_USER: "rctv"
+      POSTGRES_PASSWORD: "rctv@01"
+      POSTGRES_DB: "media_db"
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - tunnel-net
 
@@ -43,14 +43,15 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
     ports:
-      - "9000:9000"   # expone Portainer en la red local
+      - "9000:9000"
     networks:
       - tunnel-net
 
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared
-    command: tunnel run --token ${TUNNEL_TOKEN}
+    # Token mejor en .env: TUNNEL_TOKEN=xxx
+    command: tunnel run --token "${TUNNEL_TOKEN}"
     volumes:
       - ./cloudflared:/etc/cloudflared
     networks:
