@@ -8,5 +8,5 @@ ingress:
 # Servicio TCP para Postgres dentro del túnel
 services:
   postgres:
-    url: tcp://postgres:5432
+    url: tcp://postgres:7864
     hostname: db.rodolfocordones.com

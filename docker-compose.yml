@@ -9,7 +9,7 @@ services:
       - DB_USER=rctv
       - DB_PASSWORD="rctv@01"
       - DB_NAME=media_db
-      - DB_PORT=5432
+      - DB_PORT=7864
       - PORT=4000
     volumes:
       - ./uploads:/usr/src/app/uploads
@@ -33,7 +33,7 @@ services:
     networks:
       - tunnel-net
     expose:
-      - "5432"  # solo en la red Docker
+      - "7864"  # solo en la red Docker
 
   portainer:
     image: portainer/portainer-ce:latest
