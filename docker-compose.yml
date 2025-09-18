@@ -6,7 +6,7 @@ services:
     container_name: api
     environment:
       - DB_HOST=postgres
-      - DB_USER=admin
+      - DB_USER=rctv
       - DB_PASSWORD=rctv@01
       - DB_NAME=media_db
       - DB_PORT=5432
@@ -24,7 +24,7 @@ services:
     image: postgres:15
     container_name: postgres
     environment:
-      POSTGRES_USER: admin
+      POSTGRES_USER: rctv
       POSTGRES_PASSWORD: rctv@01
       POSTGRES_DB: media_db
     ports:

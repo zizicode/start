@@ -12,5 +12,5 @@ sudo docker images -q | xargs -r sudo docker rmi -f
 # sudo docker images | grep "api" | awk '{print $3}' | xargs -r sudo docker rmi -f
 
 echo "🟢 Ejecutando setup.sh..."
-chmod +x setup.sh
+chmod +x setud.sh
 ./setup.sh
