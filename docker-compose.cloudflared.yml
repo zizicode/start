@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel run --token "${TUNNEL_TOKEN}"
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    restart: always
+    networks:
+      - tunnel-net
+
+networks:
+  tunnel-net:
+    driver: bridge
