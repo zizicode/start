@@ -1,6 +1,7 @@
 # --- Dependencias ---
 node_modules/
 **/node_modules/
+./api_v1/node_modules
 
 # --- Archivos de entorno ---
 .env
