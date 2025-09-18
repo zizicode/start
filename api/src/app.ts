@@ -7,8 +7,8 @@ export const app = express();
 app.use(express.json());
 
 // Rutas
-app.use("/api/status", statusRouter);
-app.use("/api/upload", uploadRouter);
+app.use("/status", statusRouter);
+app.use("/upload", uploadRouter);
 
 // Servir archivos estáticos desde /uploads
 app.use("/media", express.static("uploads"));

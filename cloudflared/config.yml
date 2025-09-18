@@ -1,4 +1,6 @@
 ingress:
   - hostname: api.rodolfocordones.com
-    service: http://start_api:4000
+    service: http://api:4000
+  - hostname: docker.rodolfocordones.com
+    service: http://portainer:9000
   - service: http_status:404
