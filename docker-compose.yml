@@ -17,6 +17,8 @@ services:
       - postgres
     networks:
       - tunnel-net
+    ports:
+      - "4000:4000"   # expone API localmente
 
   postgres:
     image: postgres:15
@@ -25,10 +27,23 @@ services:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: rctv@01
       POSTGRES_DB: media_db
-      ports: "5432:5432"
+    ports:
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - tunnel-net
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - "9000:9000"   # expone Portainer en la red local
     networks:
       - tunnel-net
 
@@ -43,16 +58,6 @@ services:
     depends_on:
       - api
       - portainer
-
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
-    restart: always
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
-    networks:
-      - tunnel-net
 
 networks:
   tunnel-net:
