@@ -4,5 +4,5 @@ ingress:
   - hostname: docker.rodolfocordones.com
     service: http://portainer:9000
   - hostname: db.rodolfocordones.com
-    service: http://postgres:5432
+    service: tcp://postgres:5432
   - service: http_status:404
