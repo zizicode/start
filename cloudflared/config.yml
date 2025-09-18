@@ -3,12 +3,8 @@ ingress:
     service: http://api:4000
   - hostname: docker.rodolfocordones.com
     service: http://portainer:9000
-  - hostname: db.rodolfocordones.com
-    service: tcp://postgres:5432
   - service: http_status:404
 
-# Servicio TCP para Postgres dentro del túnel
 services:
-  postgres:
-    protocol: tcp
-    url: tcp://postgres:5432
+  - hostname: db.rodolfocordones.com
+    service: tcp://postgres:5432
