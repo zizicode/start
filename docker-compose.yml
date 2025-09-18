@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  api:
+    build: ./api_v1
+    container_name: api
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=admin
+      - DB_PASSWORD=rctv@01
+      - DB_NAME=media_db
+      - DB_PORT=5432
+      - PORT=4000
+    volumes:
+      - ./uploads:/usr/src/app/uploads   # Carpeta persistente local -> contenedor
+    depends_on:
+      - postgres
+    networks:
+      - tunnel-net
+    ports:
+      - "4000:4000"   # expone la API localmente (opcional si usas cloudflared)
+
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: rctv@01
+      POSTGRES_DB: media_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - tunnel-net
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel run --token ${TUNNEL_TOKEN}
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    networks:
+      - tunnel-net
+    depends_on:
+      - api
+
+networks:
+  tunnel-net:
+    driver: bridge
+
+volumes:
+  pgdata:

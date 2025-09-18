@@ -1,0 +1,4 @@
+ingress:
+  - hostname: api.rodolfocordones.com
+    service: http://api:4000
+  - service: http_status:404
