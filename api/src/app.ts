@@ -2,7 +2,7 @@ import express from "express";
 import statusRouter from "./routes/status.routes";
 import uploadRouter from "./routes/upload.routes";
 
-const app = express();
+export const app = express();
 
 app.use(express.json());
 
