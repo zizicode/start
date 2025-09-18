@@ -11,6 +11,6 @@ sudo docker images -q | xargs -r sudo docker rmi -f
 # Si prefieres borrar solo las de tu API:
 # sudo docker images | grep "api" | awk '{print $3}' | xargs -r sudo docker rmi -f
 
-echo "🟢 Ejecutando setup.sh..."
+echo "🟢 Ejecutando setud.sh..."
 chmod +x setud.sh
-./setup.sh
+./setud.sh
