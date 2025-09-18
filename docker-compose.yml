@@ -17,8 +17,8 @@ services:
       - postgres
     networks:
       - tunnel-net
-    ports:
-      - "4000:4000"   # expone API localmente
+    expose:
+      - "4000"  # solo en la red Docker
 
   postgres:
     image: postgres:15
@@ -27,13 +27,13 @@ services:
       POSTGRES_USER: "rctv"
       POSTGRES_PASSWORD: "rctv@01"
       POSTGRES_DB: "media_db"
-    ports:
-      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - tunnel-net
+    expose:
+      - "5432"  # solo en la red Docker
 
   portainer:
     image: portainer/portainer-ce:latest
@@ -42,15 +42,14 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
-    ports:
-      - "9000:9000"
     networks:
       - tunnel-net
+    expose:
+      - "9000"
 
   cloudflared:
     image: cloudflare/cloudflared:latest
     container_name: cloudflared
-    # Token mejor en .env: TUNNEL_TOKEN=xxx
     command: tunnel run --token "${TUNNEL_TOKEN}"
     volumes:
       - ./cloudflared:/etc/cloudflared
@@ -59,6 +58,7 @@ services:
     depends_on:
       - api
       - portainer
+      - postgres
 
 networks:
   tunnel-net:
