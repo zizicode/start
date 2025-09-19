@@ -7,10 +7,10 @@ set -euo pipefail
 BASE_COMPOSE="-f docker-compose.base.yml"
 declare -A SERVICES
 SERVICES=(
-  ["api"]="-f docker-compose.api.yml"
-  ["pgadmin"]="-f docker-compose.pgadmin.yml"
-  ["portainer"]="-f docker-compose.portainer.yml"
   ["cloudflared"]="-f docker-compose.cloudflared.yml"
+  ["api"]="-f docker-compose.api.yml"
+  ["portainer"]="-f docker-compose.portainer.yml"
+  ["pgadmin"]="-f docker-compose.pgadmin.yml"
 )
 
 # -------------------------
@@ -18,7 +18,7 @@ SERVICES=(
 # -------------------------
 function usage() {
   echo "Uso: $0 {up|down|restart|rebuild} [servicio]"
-  echo "Servicios disponibles: api, pgadmin, portainer, cloudflared, all"
+  echo "Servicios disponibles: cloudflared, api, portainer, pgadmin, all"
   exit 1
 }
 
@@ -27,10 +27,10 @@ function compose_up() {
   local service=$1
   if [[ "$service" == "all" ]]; then
     docker-compose $BASE_COMPOSE \
-      -f docker-compose.cloudflared.yml up -d \
+      -f docker-compose.cloudflared.yml \
       -f docker-compose.api.yml \
-      -f docker-compose.pgadmin.yml \
-      -f docker-compose.portainer.yml 
+      -f docker-compose.portainer.yml \
+      -f docker-compose.pgadmin.yml up -d
   else
     if [[ -v SERVICES[$service] ]]; then
       docker-compose $BASE_COMPOSE ${SERVICES[$service]} up -d
@@ -46,9 +46,9 @@ function compose_down() {
   local service=$1
   if [[ "$service" == "all" ]]; then
     docker-compose $BASE_COMPOSE \
-      -f docker-compose.api.yml \
       -f docker-compose.pgadmin.yml \
       -f docker-compose.portainer.yml \
+      -f docker-compose.api.yml \
       -f docker-compose.cloudflared.yml down
   else
     if [[ -v SERVICES[$service] ]]; then
@@ -67,25 +67,25 @@ function compose_restart() {
   compose_up "$service"
 }
 
-# Reconstruir contenedor(s) (build y levantar de nuevo)
+# Reconstruir contenedor(s)
 function compose_rebuild() {
   local service=$1
   if [[ "$service" == "all" ]]; then
     docker-compose $BASE_COMPOSE \
-      -f docker-compose.api.yml \
       -f docker-compose.pgadmin.yml \
       -f docker-compose.portainer.yml \
+      -f docker-compose.api.yml \
       -f docker-compose.cloudflared.yml down
     docker-compose $BASE_COMPOSE \
-      -f docker-compose.api.yml \
       -f docker-compose.pgadmin.yml \
       -f docker-compose.portainer.yml \
+      -f docker-compose.api.yml \
       -f docker-compose.cloudflared.yml build --no-cache
     docker-compose $BASE_COMPOSE \
-      -f docker-compose.cloudflared.yml up -d \
+      -f docker-compose.cloudflared.yml \
       -f docker-compose.api.yml \
-      -f docker-compose.pgadmin.yml \
-      -f docker-compose.portainer.yml 
+      -f docker-compose.portainer.yml \
+      -f docker-compose.pgadmin.yml up -d
   else
     if [[ -v SERVICES[$service] ]]; then
       docker-compose $BASE_COMPOSE ${SERVICES[$service]} down
