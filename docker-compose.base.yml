@@ -1,10 +1,19 @@
 version: "3.8"
 
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: tunnel run --token "${TUNNEL_TOKEN}"
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    networks:
+      - tunnel-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]  # o alguna URL válida del túnel
+      interval: 10s
+      retries: 5
+
 networks:
   tunnel-net:
     driver: bridge
-
-volumes:
-  pgdata:
-  portainer_data:
-  pgadmin_data:
