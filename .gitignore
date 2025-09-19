@@ -1,0 +1,33 @@
+# Environment variables
+.env
+
+# Logs
+*.log
+logs/
+
+# Docker
+.docker/
+
+# Backup files
+*.backup
+*.bak
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/

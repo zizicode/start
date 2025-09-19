@@ -1,0 +1,23 @@
+tunnel: ${TUNNEL_ID}
+credentials-file: /etc/cloudflared/credentials.json
+
+ingress:
+  - hostname: api.rodolfocordones.com
+    service: http://api:4000
+    originRequest:
+      httpHostHeader: api.rodolfocordones.com
+      
+  - hostname: docker.rodolfocordones.com
+    service: http://portainer:9000
+    originRequest:
+      httpHostHeader: docker.rodolfocordones.com
+      
+  - hostname: pgadmin.rodolfocordones.com
+    service: http://pgadmin:80
+    originRequest:
+      httpHostHeader: pgadmin.rodolfocordones.com
+      
+  - service: http_status:404
+
+# Optional: Enable metrics
+metrics: 0.0.0.0:8080

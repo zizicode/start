@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  api:
+    image: rc-backend-api:latest
+    container_name: api
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=4000
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      - JWT_SECRET=${JWT_SECRET}
+      - API_KEY=${API_KEY}
+    ports:
+      - "4000:4000"
+    networks:
+      - tunnel-net
+      - db-net
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - api_logs:/app/logs
+      - api_uploads:/app/uploads
+
+volumes:
+  api_logs:
+    driver: local
+  api_uploads:
+    driver: local
+
+networks:
+  tunnel-net:
+    external: true
+  db-net:
+    external: true

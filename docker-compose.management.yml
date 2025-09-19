@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    restart: unless-stopped
+    command: -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    ports:
+      - "9000:9000"
+      - "9443:9443"
+    networks:
+      - tunnel-net
+    environment:
+      - PORTAINER_ADMIN_PASSWORD_FILE=/run/secrets/portainer_admin_password
+    secrets:
+      - portainer_admin_password
+
+volumes:
+  portainer_data:
+    driver: local
+
+networks:
+  tunnel-net:
+    external: true
+
+secrets:
+  portainer_admin_password:
+    file: ./secrets/portainer_admin_password.txt

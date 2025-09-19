@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARED_TOKEN}
+    networks:
+      - tunnel-net
+    environment:
+      - TUNNEL_TOKEN=${CLOUDFLARED_TOKEN}
+    volumes:
+      - ./cloudflared:/etc/cloudflared
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    depends_on:
+      - api
+      - portainer
+      - pgadmin
+
+networks:
+  tunnel-net:
+    external: true
