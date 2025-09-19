@@ -39,8 +39,8 @@ services:
     image: dpage/pgadmin4
     container_name: pgadmin
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@correo.com
-      PGADMIN_DEFAULT_PASSWORD: tu_contraseña
+      PGADMIN_DEFAULT_EMAIL: victordoblezz@gmail.com
+      PGADMIN_DEFAULT_PASSWORD: Inicio@01
     networks:
       - tunnel-net
     ports:
