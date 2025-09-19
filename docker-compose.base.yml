@@ -1,0 +1,10 @@
+version: "3.8"
+
+networks:
+  tunnel-net:
+    driver: bridge
+
+volumes:
+  pgdata:
+  portainer_data:
+  pgadmin_data:

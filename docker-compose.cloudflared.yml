@@ -3,14 +3,14 @@ version: "3.8"
 services:
   cloudflared:
     image: cloudflare/cloudflared:latest
-    container_name: cloudflared
-    command: tunnel run --token "${TUNNEL_TOKEN}"
+    container_name: cloudflared token
+    command: tunnel run --token "eyJhIjoiNzE3M2Y5MWI3MmFjZWFiNTAwYWNmMWY2YmFlYWJmNGIiLCJ0IjoiNzZjN2JhY2MtNjJjOS00Y2JiLWE3NGEtOWQ3OGFmNTg5YmYwIiwicyI6IllqQTVNalF3Tm1JdFlqTmxPQzAwT1RNMkxUaGtNV010TXpaaE5HTTVZVFV5WVdZeSJ9"
     volumes:
       - ./cloudflared:/etc/cloudflared
-    restart: always
     networks:
       - tunnel-net
-
-networks:
-  tunnel-net:
-    driver: bridge
+    depends_on:
+      - api
+      - postgres
+      - pgadmin
+      - portainer
