@@ -9,7 +9,7 @@ services:
       - DB_USER=rctv
       - DB_PASSWORD=rctv@01
       - DB_NAME=media_db
-      - DB_PORT=5432   # 👈 puerto interno de Postgres en Docker
+      - DB_PORT=5432
       - PORT=4000
     volumes:
       - ./uploads:/usr/src/app/uploads
@@ -18,7 +18,7 @@ services:
     networks:
       - tunnel-net
     expose:
-      - "4000"  # accesible solo dentro de la red Docker
+      - "4000"
 
   postgres:
     image: postgres:15
@@ -32,10 +32,19 @@ services:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     networks:
       - tunnel-net
-    ports:
-      - "7864:5432"   # 👈 accesible desde fuera del servidor (ej. pgAdmin local)
     expose:
-      - "5432"        # accesible dentro de la red Docker
+      - "5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@correo.com
+      PGADMIN_DEFAULT_PASSWORD: tu_contraseña
+    networks:
+      - tunnel-net
+    ports:
+      - "8080:80"   # web pgAdmin accesible desde el navegador
 
   portainer:
     image: portainer/portainer-ce:latest
@@ -47,7 +56,7 @@ services:
     networks:
       - tunnel-net
     ports:
-      - "9000:9000"   # 👈 expuesto fuera
+      - "9000:9000"
     expose:
       - "9000"
 
@@ -63,6 +72,7 @@ services:
       - api
       - portainer
       - postgres
+      - pgadmin
 
 networks:
   tunnel-net:
