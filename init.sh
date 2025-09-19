@@ -33,7 +33,7 @@ fi
 export TUNNEL_TOKEN="${TUNNEL_TOKEN}"
 
 # Levantar contenedores
-chmod +x ./manage.sh
-./manage.sh up all
+chmod +x ./run.sh
+./run.sh up all
 
 echo "✅ Todo listo! Accede a tus servicios vía Cloudflared."
