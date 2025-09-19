@@ -35,6 +35,6 @@ volumes:
 
 networks:
   tunnel-net:
-    external: true
+    driver: bridge
   db-net:
     external: true

@@ -24,4 +24,4 @@ services:
 
 networks:
   tunnel-net:
-    external: true
+    driver: bridge

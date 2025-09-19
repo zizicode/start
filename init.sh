@@ -152,7 +152,7 @@ sudo systemctl start docker
 # Create Docker network for Cloudflared
 print_status "Creating Docker network 'tunnel-net'..."
 if ! docker network ls | grep -q tunnel-net; then
-    docker network create tunnel-net
+    sudo docker network create tunnel-net
     print_success "Docker network 'tunnel-net' created"
 else
     print_warning "Docker network 'tunnel-net' already exists"
