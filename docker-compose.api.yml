@@ -40,3 +40,6 @@ services:
       - tunnel-net
     expose:
       - "4000"
+
+volumes:
+  pgdata:
