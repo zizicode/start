@@ -27,10 +27,10 @@ function compose_up() {
   local service=$1
   if [[ "$service" == "all" ]]; then
     docker-compose $BASE_COMPOSE \
+      -f docker-compose.cloudflared.yml up -d \
       -f docker-compose.api.yml \
       -f docker-compose.pgadmin.yml \
-      -f docker-compose.portainer.yml \
-      -f docker-compose.cloudflared.yml up -d
+      -f docker-compose.portainer.yml 
   else
     if [[ -v SERVICES[$service] ]]; then
       docker-compose $BASE_COMPOSE ${SERVICES[$service]} up -d
@@ -82,10 +82,10 @@ function compose_rebuild() {
       -f docker-compose.portainer.yml \
       -f docker-compose.cloudflared.yml build --no-cache
     docker-compose $BASE_COMPOSE \
+      -f docker-compose.cloudflared.yml up -d \
       -f docker-compose.api.yml \
       -f docker-compose.pgadmin.yml \
-      -f docker-compose.portainer.yml \
-      -f docker-compose.cloudflared.yml up -d
+      -f docker-compose.portainer.yml 
   else
     if [[ -v SERVICES[$service] ]]; then
       docker-compose $BASE_COMPOSE ${SERVICES[$service]} down
