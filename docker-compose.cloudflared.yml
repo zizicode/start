@@ -1,9 +1,0 @@
-services:
-  cloudflared:
-    image: cloudflare/cloudflared:latest
-    container_name: cloudflared
-    command: tunnel run --token "${TUNNEL_TOKEN}"
-    volumes:
-      - ./cloudflared:/etc/cloudflared
-    networks:
-      - tunnel-net

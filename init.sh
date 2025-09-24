@@ -1,39 +1,49 @@
-#!/usr/bin/env bash
 set -euo pipefail
 
-# -------------------------
-# CONFIG (reemplaza con tus tokens)
-# -------------------------
-TS_AUTH_KEY="tskey-auth-kRytAzpsR121CNTRL-ToKgHfW787VHJqEu1TLT7VizEE6K5VdN"
-TUNNEL_TOKEN="eyJhIjoiNzE3M2Y5MWI3MmFjZWFiNTAwYWNmMWY2YmFlYWJmNGIiLCJ0IjoiNzZjN2JhY2MtNjJjOS00Y2JiLWE3NGEtOWQ3OGFmNTg5YmYwIiwicyI6IllqQTVNalF3Tm1JdFlqTmxPQzAwT1RNMkxUaGtNV010TXpaaE5HTTVZVFV5WVdZeSJ9"
-# -------------------------
-echo "=== Actualizando paquetes ==="
-sudo apt update -y && sudo apt upgrade -y
+if [ "$EUID" -ne 0 ]; then
+  echo "Por favor ejecuta como root (usa sudo)." >&2
+  exit 1
+fi
 
-echo "=== Instalando OpenSSH y UFW ==="
-sudo apt install -y openssh-server ufw
-sudo systemctl enable --now ssh
-sudo ufw allow ssh || true
+if [ $# -ne 1 ]; then
+  echo "Uso: $0 <TAILSCALE_AUTHKEY>" >&2
+  exit 1
+fi
 
-echo "=== Instalando Tailscale ==="
+TAILSCALE_KEY="$1"
+
+echo "==> Actualizando paquetes..."
+apt-get update -y
+apt-get upgrade -y
+
+echo "==> Instalando dependencias para Docker..."
+apt-get install -y \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+echo "==> Añadiendo repositorio oficial de Docker..."
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" \
+  > /etc/apt/sources.list.d/docker.list
+
+apt-get update -y
+
+echo "==> Instalando Docker Engine y docker compose plugin..."
+apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+echo "==> Habilitando y arrancando servicio Docker..."
+systemctl enable --now docker
+
+echo "==> Instalando Tailscale..."
 curl -fsSL https://tailscale.com/install.sh | sh
-sudo tailscale up --authkey="${TS_AUTH_KEY}"
 
-echo "=== Instalando Docker y Docker Compose ==="
-if ! command -v docker >/dev/null 2>&1; then
-  curl -fsSL https://get.docker.com | sh
-  sudo systemctl enable --now docker
-fi
+echo "==> Iniciando y conectando Tailscale..."
+tailscale up --authkey "${TAILSCALE_KEY}"
 
-if ! command -v docker-compose >/dev/null 2>&1; then
-  sudo apt install -y docker-compose
-fi
-
-# Exportar token
-export TUNNEL_TOKEN="${TUNNEL_TOKEN}"
-
-# Levantar contenedores
-chmod +x ./run.sh
-./run.sh up all
-
-echo "✅ Todo listo! Accede a tus servicios vía Cloudflared."
+echo "==> Todo listo."
+echo "Comprueba el estado con: tailscale status"

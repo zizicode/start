@@ -1,8 +1,0 @@
-ingress:
-  - hostname: api.rodolfocordones.com
-    service: http://api:4000
-  - hostname: docker.rodolfocordones.com
-    service: http://portainer:9000
-  - hostname: pgadmin.rodolfocordones.com
-    service: http://pgadmin:80
-  - service: http_status:404
