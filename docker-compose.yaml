@@ -1,3 +1,5 @@
+version: "3.9"
+
 services:
   tailscale-authkey1:
     image: tailscale/tailscale:latest
@@ -11,8 +13,16 @@ services:
       - ts-authkey:/var/lib/tailscale
       - /dev/net/tun:/dev/net/tun
     cap_add:
-      - net_admin
-      - sys_module
+      - NET_ADMIN
+      - SYS_MODULE
+    restart: unless-stopped
+
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: portainer
+    network_mode: service:tailscale-authkey1
+    volumes:
+      - portainer_data:/data
     restart: unless-stopped
 
   nginx-authkey:
@@ -21,4 +31,6 @@ services:
 
 volumes:
   ts-authkey:
+    driver: local
+  portainer_data:
     driver: local
