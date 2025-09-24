@@ -1,0 +1,18 @@
+services:
+  api:
+    build: .
+    container_name: api_v1
+    ports:
+      - "3030:3030"
+    env_file:
+      - .env.development
+    volumes:
+      - /usr/src/app/node_modules
+
+networks:
+  network_backend:
+    name: network_backend
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.28.0.0/16

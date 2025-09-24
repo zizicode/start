@@ -1,12 +1,10 @@
-version: "3.9"
-
 services:
-  tailscale-authkey1:
+  tailscale:
     image: tailscale/tailscale:latest
     container_name: tailscale-root
     hostname: server
     environment:
-      - TS_AUTHKEY=tskey-auth-kNwEyuyuMs11CNTRL-QVbV7bvN4B1Jr9pXa9XNB1Snp9KmRMY6
+      - TS_AUTHKEY=tskey-auth-kNwEyuyuMs11CNTRL-QVbV7bvN4B1Jr9pXa9XNB1Snp9KmRMY6# tu authkey de Tailscale
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
     volumes:
@@ -16,18 +14,21 @@ services:
       - NET_ADMIN
       - SYS_MODULE
     restart: unless-stopped
+    command: tailscaled --state=/var/lib/tailscale/tailscaled.state
 
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
-    network_mode: service:tailscale-authkey1
+    network_mode: service:tailscale  
     volumes:
       - portainer_data:/data
     restart: unless-stopped
 
-  nginx-authkey:
-    image: nginx
-    network_mode: service:tailscale-authkey1
+  backend:
+    build: ./rc-app-api-v1        
+    container_name: api-v1
+    network_mode: service:tailscale
+    restart: unless-stopped
 
 volumes:
   ts-authkey:
