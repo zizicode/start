@@ -17,7 +17,7 @@ services:
     command: >
       sh -c "tailscaled &
             sleep 5 &&
-            tailscale up --authkey=$TS_AUTHKEY --hostname=server &&
+            tailscale up --authkey=tskey-auth-kNwEyuyuMs11CNTRL-QVbV7bvN4B1Jr9pXa9XNB1Snp9KmRMY6 --hostname=server &&
             tailscale serve --bg --set-path /api http://127.0.0.1:3030 &&
             tailscale serve --bg --set-path /portainer http://127.0.0.1:9443 &&
             tailscale funnel 443 on &&
