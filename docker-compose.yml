@@ -1,5 +1,5 @@
 services:
-  # Servicio de Tailscale - Configuración mínima
+  # Servicio de Tailscale
   tailscale:
     image: tailscale/tailscale:latest
     hostname: server-rodolfo
@@ -8,18 +8,27 @@ services:
       - TS_AUTHKEY=tskey-auth-kNwEyuyuMs11CNTRL-QVbV7bvN4B1Jr9pXa9XNB1Snp9KmRMY6
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=true
+      - TS_EXTRA_ARGS=--advertise-tags=tag:server --accept-routes --reset
       - TS_HOSTNAME=server-rodolfo
+      - TS_ENABLE_HEALTH_CHECK=true
+      - TS_ENABLE_METRICS=true
+      - TS_LOCAL_ADDR_PORT=0.0.0.0:9002
+      - TS_AUTH_ONCE=false
     volumes:
       - tailscale_data:/var/lib/tailscale
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
     restart: unless-stopped
     ports:
       - "3030:3030"
       - "9443:9443"
+      - "9000:9000"
 
-  # API Node.js
+  # API Node.js - Build desde código fuente
   rc-api:
     build:
-      context: ./rc-app-api-v2
+      context: ./rc-app-api-v1
       dockerfile: Dockerfile
     container_name: rc-api
     environment:
@@ -39,7 +48,7 @@ services:
   portainer:
     image: portainer/portainer-ee:latest
     container_name: portainer
-    command: -H unix:///var/run/docker.sock --bind=:9443
+    command: -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
@@ -50,5 +59,8 @@ services:
 
 volumes:
   tailscale_data:
+    driver: local
   api_data:
+    driver: local
   portainer_data:
+    driver: local
