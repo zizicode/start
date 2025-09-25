@@ -1,47 +1,70 @@
 services:
   tailscale:
     image: tailscale/tailscale:latest
-    container_name: tailscale-root
-    hostname: server
+    hostname: server-rodolfo
+    container_name: tailscale-main
     environment:
       - TS_AUTHKEY=tskey-auth-kNwEyuyuMs11CNTRL-QVbV7bvN4B1Jr9pXa9XNB1Snp9KmRMY6
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
+      - TS_EXTRA_ARGS=--advertise-tags=tag:server --accept-routes
+      - TS_HOSTNAME=server-rodolfo
+      - TS_ENABLE_HEALTH_CHECK=true
+      - TS_ENABLE_METRICS=true
+      - TS_LOCAL_ADDR_PORT=:9002
     volumes:
-      - ts-authkey:/var/lib/tailscale
+      - tailscale_data:/var/lib/tailscale
+    devices:
       - /dev/net/tun:/dev/net/tun
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
     restart: unless-stopped
-    command: >
-      sh -c "tailscaled &
-            sleep 5 &&
-            tailscale up --authkey=tskey-auth-kNwEyuyuMs11CNTRL-QVbV7bvN4B1Jr9pXa9XNB1Snp9KmRMY6 --hostname=server &&
-            tailscale serve --bg --set-path /api http://127.0.0.1:3030 &&
-            tailscale serve --bg --set-path /portainer http://127.0.0.1:9443 &&
-            tailscale funnel 443 on &&
-            wait"
-
-  portainer:
-    image: portainer/portainer-ce:latest
-    container_name: portainer
     ports:
-      - "9443:9443"   # puerto publicado al host
+      - "3030:3030"
+      - "9443:9443"
+
+  rc-api:
+    build:
+      context: ./rc-app-api-v1
+      dockerfile: Dockerfile
+    container_name: rc-api
+    environment:
+      - NODE_ENV=production
+      - PORT=3030
+      - API_HOST=0.0.0.0
+      - API_PORT=3030
     volumes:
-      - portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock
+      - api_data:/app/data
+      - ./logs:/app/logs
+    network_mode: service:tailscale
+    depends_on:
+      - tailscale
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3030/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
-  backend:
-    build: ./rc-app-api-v1
-    container_name: api-v1
-    ports:
-      - "3030:3030"   # puerto publicado al host
+  # Portainer
+  portainer:
+    image: portainer/portainer-ee:latest
+    container_name: portainer
+    command: -H unix:///var/run/docker.sock --bind=:9443 --tunnel-port 30776
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    network_mode: service:tailscale
+    depends_on:
+      - tailscale
     restart: unless-stopped
 
 volumes:
-  ts-authkey:
+  tailscale_data:
+    driver: local
+  api_data:
     driver: local
   portainer_data:
     driver: local
