@@ -18,6 +18,8 @@ services:
       sh -c "tailscaled &
             sleep 5 &&
             tailscale up --authkey=tskey-auth-kNwEyuyuMs11CNTRL-QVbV7bvN4B1Jr9pXa9XNB1Snp9KmRMY6 --hostname=server &&
+            portainer --admin-password-file /data/password &
+            node /app/backend.js &
             tailscale funnel 3030 --target 127.0.0.1:3030 &
             tailscale funnel 9443 --target 127.0.0.1:9443 &
             wait"
