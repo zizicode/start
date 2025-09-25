@@ -16,12 +16,11 @@ services:
     restart: unless-stopped
     command: >
       sh -c "tailscaled &
-             sleep 5 &&
-             tailscale up --authkey=$TS_AUTHKEY --hostname=server &&
-             tailscale funnel 3030 &
-             tailscale funnel 9000 &
-             tailscale funnel 9443 &
-             wait"
+            sleep 5 &&
+            tailscale up --authkey=$TS_AUTHKEY --hostname=server &&
+            tailscale funnel 3030 --target 127.0.0.1:3030 &
+            tailscale funnel 9443 --target 127.0.0.1:9443 &
+            wait"
 
   portainer:
     image: portainer/portainer-ce:latest
