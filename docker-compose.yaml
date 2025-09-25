@@ -16,27 +16,27 @@ services:
     restart: unless-stopped
     command: >
       sh -c "tailscaled &
-            sleep 5 &&
-            tailscale up --authkey=tskey-auth-kNwEyuyuMs11CNTRL-QVbV7bvN4B1Jr9pXa9XNB1Snp9KmRMY6 --hostname=server &&
-            portainer --admin-password-file /data/password &
-            node /app/backend.js &
-            tailscale funnel 3030 --target 127.0.0.1:3030 &
-            tailscale funnel 9443 --target 127.0.0.1:9443 &
-            wait"
+             sleep 5 &&
+             tailscale up --authkey=$TS_AUTHKEY --hostname=server &&
+             tailscale funnel 3030 --target 127.0.0.1:3030 &
+             tailscale funnel 9443 --target 127.0.0.1:9443 &
+             wait"
 
   portainer:
     image: portainer/portainer-ce:latest
     container_name: portainer
-    network_mode: service:tailscale  
+    ports:
+      - "9443:9443"   # puerto publicado al host
     volumes:
       - portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock
     restart: unless-stopped
 
   backend:
-    build: ./rc-app-api-v1        
+    build: ./rc-app-api-v1
     container_name: api-v1
-    network_mode: service:tailscale
+    ports:
+      - "3030:3030"   # puerto publicado al host
     restart: unless-stopped
 
 volumes:
