@@ -1,40 +1,33 @@
-# Dockerfile para rc-app-api-v1
 FROM node:18-alpine
 
-# Crear directorio de la aplicación
 WORKDIR /app
-
-# Instalar curl para health checks
 RUN apk add --no-cache curl
 
-# Copiar archivos de dependencias
-COPY package*.json ./
+# Copia solo los archivos necesarios para instalar deps
+COPY package*.json tsconfig.json ./
 
-# Instalar dependencias
-RUN npm ci --only=production && npm cache clean --force
+# Instala dependencias de desarrollo para poder compilar
+RUN npm install
 
-# Copiar código fuente
+# Copia el resto del código
 COPY . .
 
+# Compila TypeScript a dist/
+RUN npm run build
+
+# Ahora elimina devDependencies para dejar solo prod (opcional)
+RUN npm prune --production && npm cache clean --force
+
 # Crear directorios necesarios
-RUN mkdir -p logs uploads
+RUN mkdir -p logs uploads \
+    && addgroup -g 1001 -S nodejs \
+    && adduser -S nodejs -u 1001 \
+    && chown -R nodejs:nodejs /app
 
-# Crear usuario no-root
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001
-
-# Cambiar ownership de archivos
-RUN chown -R nodejs:nodejs /app
-
-# Cambiar a usuario no-root
 USER nodejs
-
-# Exponer puerto
 EXPOSE 3001
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD curl -f http://localhost:3001/health || exit 1
 
-# Comando por defecto
 CMD ["npm", "start"]
