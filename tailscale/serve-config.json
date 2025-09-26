@@ -1,0 +1,32 @@
+{
+  "TCP": {
+    "443": {
+      "HTTPS": true
+    },
+    "8443": {
+      "HTTPS": true
+    }
+  },
+  "Web": {
+    "${TS_HOSTNAME}.${TS_DOMAIN}.ts.net:443": {
+      "Handlers": {
+        "/": {
+          "Proxy": "http://127.0.0.1:3001"
+        },
+        "/api/": {
+          "Proxy": "http://127.0.0.1:3001/api/"
+        },
+        "/health": {
+          "Proxy": "http://127.0.0.1:3001/health"
+        }
+      }
+    },
+    "${TS_HOSTNAME}.${TS_DOMAIN}.ts.net:8443": {
+      "Handlers": {
+        "/": {
+          "Proxy": "http://127.0.0.1:9000"
+        }
+      }
+    }
+  }
+}
