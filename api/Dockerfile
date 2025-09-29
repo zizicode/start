@@ -1,33 +1,23 @@
-FROM node:18-alpine
+# Use Node.js LTS version
+FROM node:20-alpine
 
+# Set working directory
 WORKDIR /app
-RUN apk add --no-cache curl
 
-# Copia solo los archivos necesarios para instalar deps
-COPY package*.json tsconfig.json ./
+# Copy package files
+COPY package*.json ./
 
-# Instala dependencias de desarrollo para poder compilar
-RUN npm install
+# Install dependencies
+RUN npm ci --only=production
 
-# Copia el resto del código
+# Copy application files
 COPY . .
 
-# Compila TypeScript a dist/
-RUN npm run build
+# Create media directory for uploads
+RUN mkdir -p media
 
-# Ahora elimina devDependencies para dejar solo prod (opcional)
-RUN npm prune --production && npm cache clean --force
-
-# Crear directorios necesarios
-RUN mkdir -p logs uploads \
-    && addgroup -g 1001 -S nodejs \
-    && adduser -S nodejs -u 1001 \
-    && chown -R nodejs:nodejs /app
-
-USER nodejs
+# Expose port
 EXPOSE 3001
 
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:3001/health || exit 1
-
+# Start the application
 CMD ["npm", "start"]
