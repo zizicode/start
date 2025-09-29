@@ -17,7 +17,6 @@ services:
       - TS_AUTHKEY=${TS_AUTHKEY}
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_SOCKET=/var/lib/tailscale/tailscaled.sock
-      - TS_EXTRA_ARGS=--advertise-tags=tag:server --ssh
     network_mode: host
     privileged: true
 
